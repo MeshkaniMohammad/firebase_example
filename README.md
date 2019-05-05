@@ -1,6 +1,8 @@
 # firebase_example
 
-A new Flutter project.
+My first project for learning flutter and firebase.
+##
+(https://github.com/MeshkaniMohammad/firebase_example/blob/master/book_store.gif)
 
 ## Getting Started
 
