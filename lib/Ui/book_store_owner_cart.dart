@@ -36,7 +36,8 @@ class _BookStroreOwnerCartState extends State<BookStroreOwnerCart> {
                         .data.documents[index].data['book name'] as String;
                     String bookAuthor = snapshot
                         .data.documents[index].data['book author'] as String;
-
+String bookImageUrl = snapshot
+                        .data.documents[index].data['book image'] as String;
                     String bookPublisher = snapshot
                         .data.documents[index].data["book publisher"] as String;
                     int bookPrice = snapshot
@@ -60,20 +61,27 @@ class _BookStroreOwnerCartState extends State<BookStroreOwnerCart> {
                                   BorderRadius.all(Radius.circular(10.0))),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.end,
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: <Widget>[
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Center(
                                     child: Text(
-                                  bookName,
+                                  "$bookName",
                                   style: TextStyle(
                                       fontWeight: FontWeight.w900,
                                       fontSize: 22),
                                 )),
                               ),
                               Divider(),
-                              Padding(
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: <Widget>[
+                                Image.network("$bookImageUrl",width: 100,height: 150,scale: 0.5,),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: <Widget>[
+                                    Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Text(
                                   "نویسنده: $bookAuthor",
@@ -88,6 +96,11 @@ class _BookStroreOwnerCartState extends State<BookStroreOwnerCart> {
                                 padding: const EdgeInsets.all(8.0),
                                 child: Text("قیمت:$bookPrice تومان"),
                               ),
+                                  ],
+                                ),
+                              ],
+                              ),
+                              
                             ],
                           )),
                     );

@@ -23,7 +23,7 @@ class BooksState extends State<Books> {
         title: new Text("کتاب فروشی آقای ایکس"),
         actions: <Widget>[
           Container(
-            height: MediaQuery.of(context).size.height,
+            height: 50,
             width: 40,
             child: StreamBuilder(
                 stream:
@@ -55,12 +55,7 @@ class BooksState extends State<Books> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
           backgroundColor: const Color(0xFF3366FF),
-          child: ListTile(
-            trailing: Icon(
-              Icons.add,
-              color: Colors.white,
-            ),
-          ),
+          child: Icon(Icons.add,color: Colors.white,),
           onPressed: _showAlertDialog),
       bottomNavigationBar: BottomAppBar(
         notchMargin: 10.0,
@@ -261,15 +256,18 @@ class _BookUploadDialogState extends State<BookUploadDialog> {
         .child('books/${docRef.documentID}')
         .putFile(_imageFile);
     final fileUrl =
-        (await uploadTask.onComplete).uploadSessionUri.path.toString();
+        await (await uploadTask.onComplete).ref.getDownloadURL();
 
     await docRef.setData({
       "book name": _bookName,
       "book author": _bookAuthor,
-      "book image": fileUrl,
+      "book image": fileUrl.toString(),
       "book publisher": _publisher,
       "book price": _price,
       "quantity": _quantity,
+      "book name searchkey":_bookName[0],
+      "book author searchkey":_bookAuthor[0],
+      "book publisher searchkey":_publisher[0],
     });
 
     if (mounted) {

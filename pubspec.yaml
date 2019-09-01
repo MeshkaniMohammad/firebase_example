@@ -16,6 +16,7 @@ dependencies:
   sqflite: ^1.1.0
   rxdart: ^0.21.0
   badges: ^0.0.6
+  flutter_typeahead: ^1.6.1
   custom_splash_screen:
 
 dev_dependencies:

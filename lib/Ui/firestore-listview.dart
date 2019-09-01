@@ -27,8 +27,8 @@ class FireStoreListViewState extends State<FireStoreListView> {
                 widget.documents[index].data['book name'] as String;
             String bookAuthor =
                 widget.documents[index].data['book author'] as String;
-            // String bookImageUrl =
-            //     widget.documents[index].data['book image'] as String;
+             String bookImageUrl =
+                 widget.documents[index].data['book image'] as String;
 
             int _quantity = widget.documents[index].data["quantity"] as int;
             String bookPublisher =
@@ -56,21 +56,32 @@ class FireStoreListViewState extends State<FireStoreListView> {
                           )),
                         ),
                         Divider(),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            "نویسنده: $bookAuthor",
-                            style: TextStyle(color: Colors.blueAccent),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text("ناشر: $bookPublisher"),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text("قیمت:$bookPrice تومان"),
-                        ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: <Widget>[
+                                Image.network("$bookImageUrl",width: 100,height: 150,scale: 0.5,),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: <Widget>[
+                                    Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(
+                                  "نویسنده: $bookAuthor",
+                                  style: TextStyle(color: Colors.blueAccent),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text("ناشر: $bookPublisher"),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text("قیمت:$bookPrice تومان"),
+                              ),
+                                  ],
+                                ),
+                              ],
+                              ),
                         Divider(),
                         Padding(
                           padding: const EdgeInsets.all(8.0),

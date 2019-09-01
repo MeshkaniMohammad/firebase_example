@@ -1,11 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_example/Utils/primary_button.dart';
+import 'package:firebase_example/widgets/alert_dialog.dart';
 import 'package:flutter/material.dart';
 
 class CheckoutPage extends StatefulWidget {
-  static final formKey = new GlobalKey<FormState>();
   final sumPrice;
+
   CheckoutPage({Key key, this.sumPrice}) : super(key: key);
+
   @override
   _CheckoutPageState createState() => _CheckoutPageState();
 }
@@ -13,8 +15,11 @@ class CheckoutPage extends StatefulWidget {
 class _CheckoutPageState extends State<CheckoutPage> {
   String _customerName = "";
   String _fullAddress = "";
-  static final formKey = CheckoutPage.formKey;
-  static final _scaffoldKey = new GlobalKey<ScaffoldState>();
+  final favoriteBooks =
+      Firestore.instance.collection("favoriteBooks").snapshots();
+  var docRef = Firestore.instance.collection('shoppingCart');
+  final formKey = new GlobalKey<FormState>();
+  final _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +42,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
                       new InputDecoration(labelText: 'نام و نام خانوادگی'),
                   autocorrect: false,
                   keyboardType: TextInputType.text,
-                  validator: (val) => val.isEmpty ? 'این فیلد باید پر شود' : null,
+                  validator: (val) =>
+                      val.isEmpty ? 'این فیلد باید پر شود' : null,
                   onSaved: (val) => _customerName = val,
                 ),
               ),
@@ -51,7 +57,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   decoration: new InputDecoration(labelText: 'آدرس کامل'),
                   autocorrect: false,
                   keyboardType: TextInputType.text,
-                  validator: (val) => val.isEmpty ? 'این فیلد باید پر شود' : null,
+                  validator: (val) =>
+                      val.isEmpty ? 'این فیلد باید پر شود' : null,
                   onSaved: (val) => _fullAddress = val,
                 ),
               ),
@@ -60,56 +67,71 @@ class _CheckoutPageState extends State<CheckoutPage> {
               padding: const EdgeInsets.all(8.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[Text("مبلغ کل"), Text(widget.sumPrice.toString())],
+                children: <Widget>[
+                  Text("مبلغ کل"),
+                  Text(widget.sumPrice.toString())
+                ],
               ),
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: PrimaryButton(
-                text: "ارسال سفارش به درب منزل",
-                onPressed: () async {
-                  final form = formKey.currentState;
-                  if (form.validate()) {
-                    form.save();
-                    Firestore.instance
-                        .collection("favoriteBooks")
-                        .snapshots()
-                        .listen((snapShot) {
-                      snapShot.documents.forEach((doc) {
-                        final docRef = Firestore.instance
-                            .collection('shoppingCart')
-                            .document();
-                        docRef.setData({
-                          "book price": doc.data['book price'],
-                          "book name": doc.data['book name'],
-                          "book author": doc.data['book author'],
-                          "book image": doc.data['book image'],
-                          "book publisher": doc.data['book publisher'],
-                          "fullAddress": _fullAddress,
-                          "customerName": _customerName,
-                        });
-                      });
-                    });
-                    final _snackBar = SnackBar(
-                      backgroundColor: Colors.blueAccent,
-                      content: Text(
-                        "سفارش با موفقیت ثبت شد",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      duration: Duration(seconds: 1),
-                    );
-
-                    Future.delayed(Duration(milliseconds: 500), () {
-                      _scaffoldKey.currentState.showSnackBar(_snackBar);
-                    });
-                  }
+              child: StreamBuilder<QuerySnapshot>(
+                stream:
+                    Firestore.instance.collection("favoriteBooks").snapshots(),
+                builder: (context, snapshotss) {
+                  if (snapshotss.hasData) {
+                    return Column(
+                        children: snapshotss.data.documents
+                            .map((doc) => buildScaffold(doc))
+                            .toList());
+                  } else
+                    return Container();
                 },
-                height: 56,
               ),
             )
           ],
         ),
       ),
+    );
+  }
+
+  PrimaryButton buildScaffold(DocumentSnapshot doc) {
+    return PrimaryButton(
+      text: "ارسال سفارش به درب منزل",
+      onPressed: () async {
+        final form = formKey.currentState;
+        print("before form validation");
+        if (form.validate()) {
+          print("after form validation");
+          form.save();
+          favoriteBooks.listen((snapShot) async {
+            for (int i = 0; i < snapShot.documents.length; i++) {
+              await docRef.add({
+                "book price": snapShot.documents[i].data['book price'],
+                "book name": snapShot.documents[i].data['book name'],
+                "book author": snapShot.documents[i].data['book author'],
+                "book image": snapShot.documents[i].data['book image'],
+                "book publisher": snapShot.documents[i].data['book publisher'],
+                "fullAddress": _fullAddress,
+                "customerName": _customerName,
+              });
+              Firestore.instance
+                  .collection("favoriteBooks")
+                  .document(doc.documentID[i])
+                  .delete();
+            }
+          });
+
+          Future.delayed(Duration(milliseconds: 500), () {
+            showDialog(
+                context: _scaffoldKey.currentContext,
+                builder: (BuildContext context) {
+                  return MyAlertDialog(_scaffoldKey);
+                });
+          });
+        }
+      },
+      height: 56,
     );
   }
 }

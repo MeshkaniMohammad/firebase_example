@@ -14,7 +14,7 @@ class AboutUs extends StatelessWidget {
                 onPressed: () => Navigator.pop(context)),
           ),
           body: Center(
-            child: Text("about us"),
+            child: Text("امیرحسین کرد"),
           ),
       ),
     );
