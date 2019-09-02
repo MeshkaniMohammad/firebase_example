@@ -18,13 +18,13 @@ class _BookStroreOwnerCartState extends State<BookStroreOwnerCart> {
       body: StreamBuilder(
           stream: Firestore.instance.collection('shoppingCart').snapshots(),
           builder:
-              (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+              (context, AsyncSnapshot<QuerySnapshot> snapshot) {
             if (!snapshot.hasData) {
               return Center(
                 child: CircularProgressIndicator(),
               );
             }
-            if (snapshot.data != null) {
+            else if (snapshot.hasData) {
               return ListView.builder(
                   itemCount: snapshot.data.documents.length,
                   itemBuilder: (context, index) {

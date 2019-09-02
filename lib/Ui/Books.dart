@@ -27,7 +27,7 @@ class BooksState extends State<Books> {
             width: 40,
             child: StreamBuilder(
                 stream:
-                    Firestore.instance.collection('favoriteBooks').snapshots(),
+                    Firestore.instance.collection('shoppingCart').snapshots(),
                 builder: (BuildContext context,
                     AsyncSnapshot<QuerySnapshot> snapshot) {
                   if (snapshot.data != null) {

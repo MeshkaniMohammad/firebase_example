@@ -27,8 +27,8 @@ class FireStoreListViewState extends State<FireStoreListView> {
                 widget.documents[index].data['book name'] as String;
             String bookAuthor =
                 widget.documents[index].data['book author'] as String;
-             String bookImageUrl =
-                 widget.documents[index].data['book image'] as String;
+            String bookImageUrl =
+                widget.documents[index].data['book image'] as String;
 
             int _quantity = widget.documents[index].data["quantity"] as int;
             String bookPublisher =
@@ -56,32 +56,37 @@ class FireStoreListViewState extends State<FireStoreListView> {
                           )),
                         ),
                         Divider(),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: <Widget>[
+                            Image.network(
+                              "$bookImageUrl",
+                              width: 100,
+                              height: 150,
+                              scale: 0.5,
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
                               children: <Widget>[
-                                Image.network("$bookImageUrl",width: 100,height: 150,scale: 0.5,),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: <Widget>[
-                                    Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(
-                                  "نویسنده: $bookAuthor",
-                                  style: TextStyle(color: Colors.blueAccent),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(
+                                    "نویسنده: $bookAuthor",
+                                    style: TextStyle(color: Colors.blueAccent),
+                                  ),
                                 ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text("ناشر: $bookPublisher"),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text("قیمت:$bookPrice تومان"),
-                              ),
-                                  ],
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text("ناشر: $bookPublisher"),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text("قیمت:$bookPrice تومان"),
                                 ),
                               ],
-                              ),
+                            ),
+                          ],
+                        ),
                         Divider(),
                         Padding(
                           padding: const EdgeInsets.all(8.0),
@@ -221,11 +226,10 @@ class _BookUploadDialogState extends State<_UpdateBookDialog> {
 
     setState(() => _isLoading = true);
 
-    Firestore.instance.runTransaction((Transaction transaction) async {
-      DocumentSnapshot snapshot =
-          await transaction.get(documents[index].reference);
-      await transaction.update(snapshot.reference, {"quantity": _quantity});
-    });
+    Firestore.instance
+        .collection("books")
+        .document(documents[widget.index].documentID)
+        .updateData({"quantity": _quantity});
 
     if (mounted) {
       Navigator.pop(context);
@@ -239,13 +243,12 @@ class _UpdateBookPrice extends StatefulWidget {
   final int index;
 
   @override
-  _BookPriceState createState() => _BookPriceState(index);
+  _BookPriceState createState() => _BookPriceState();
 }
 
 class _BookPriceState extends State<_UpdateBookPrice> {
-  _BookPriceState(this.index);
+  _BookPriceState();
 
-  final int index;
   final GlobalKey<FormState> _formKey = GlobalKey();
 
   int _bookPrice;
@@ -324,14 +327,10 @@ class _BookPriceState extends State<_UpdateBookPrice> {
 
     setState(() => _isLoading = true);
 
-    Firestore.instance.runTransaction((Transaction transaction) async {
-      DocumentSnapshot snapshot =
-          await transaction.get(documents[index].reference);
-      await transaction.update(snapshot.reference, {
-        // "book image": fileUrl,
-        "book price": _bookPrice
-      });
-    });
+    Firestore.instance
+        .collection("books")
+        .document(documents[widget.index].documentID)
+        .updateData({"book price": _bookPrice});
 
     if (mounted) {
       Navigator.pop(context);

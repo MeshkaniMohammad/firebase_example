@@ -59,14 +59,11 @@ class _UserShoppingCartState extends State<UserShoppingCart> {
                       key: Key(_item.toString()),
                       onDismissed: (direction) {
                         setState(() {
-                          List<DocumentSnapshot> documents =
-                              snapshot.data.documents;
 
                           Firestore.instance
-                              .runTransaction((Transaction transaction) async {
-                            await transaction
-                                .delete(documents[index].reference);
-                          });
+                  .collection("favoriteBooks")
+                  .document(snapshot.data.documents[index].documentID)
+                  .delete();
                         });
                       },
                       background: Container(color: Colors.red),

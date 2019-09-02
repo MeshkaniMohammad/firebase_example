@@ -115,11 +115,12 @@ class _CheckoutPageState extends State<CheckoutPage> {
                 "fullAddress": _fullAddress,
                 "customerName": _customerName,
               });
-              Firestore.instance
-                  .collection("favoriteBooks")
-                  .document(doc.documentID[i])
-                  .delete();
+              
             }
+            Firestore.instance
+                  .collection("favoriteBooks")
+                  .document(doc.documentID)
+                  .delete();
           });
 
           Future.delayed(Duration(milliseconds: 500), () {
